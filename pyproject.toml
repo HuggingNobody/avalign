@@ -12,6 +12,9 @@ license = { text = "MIT" }
 authors = [{ name = "You Tao" }]
 dependencies = ["numpy>=1.23"]
 
+[project.optional-dependencies]
+dev = ["pytest>=7.4", "pytest-cov>=4.1", "ruff>=0.4", "mypy>=1.8"]
+
 [project.urls]
 Homepage = "https://github.com/HuggingNobody/avalign"
 
@@ -37,3 +40,15 @@ explicit_package_bases = true
 ignore_missing_imports = true
 warn_unused_ignores = true
 disallow_untyped_defs = false
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+
+[tool.coverage.run]
+branch = true
+source = ["avalign"]
+
+[tool.coverage.report]
+show_missing = true
+exclude_lines = ["pragma: no cover", "if TYPE_CHECKING:", "raise NotImplementedError"]
