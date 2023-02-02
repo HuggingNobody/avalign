@@ -4,6 +4,8 @@ from __future__ import annotations
 
 import numpy as np
 
+from avalign.audio.framing import power_spectrum
+
 
 def hz_to_mel(hz: np.ndarray | float) -> np.ndarray:
     """HTK 风格的 Hz→Mel 转换。"""
@@ -37,3 +39,25 @@ def mel_filterbank(
         right = (hi - fft_freqs) / (hi - center + 1e-10)
         fb[m] = np.clip(np.minimum(left, right), 0.0, None)
     return fb
+
+
+def mel_spectrogram(
+    signal: np.ndarray,
+    sample_rate: int = 16000,
+    n_fft: int = 400,
+    hop_length: int = 160,
+    n_mels: int = 64,
+    fmin: float = 0.0,
+    fmax: float | None = None,
+    window: str = "hann",
+) -> np.ndarray:
+    """梅尔谱，形状 ``(n_mels, num_frames)``。"""
+    ps = power_spectrum(signal, n_fft, hop_length, window)
+    fb = mel_filterbank(n_mels, n_fft, sample_rate, fmin, fmax)
+    return fb @ ps
+
+
+def log_mel_spectrogram(signal: np.ndarray, ref: float = 1e-6, **kwargs: object) -> np.ndarray:
+    """对数梅尔谱 ``log(mel + ref)``。"""
+    mel = mel_spectrogram(signal, **kwargs)  # type: ignore[arg-type]
+    return np.log(mel + ref)
