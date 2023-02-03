@@ -61,3 +61,23 @@ def log_mel_spectrogram(signal: np.ndarray, ref: float = 1e-6, **kwargs: object)
     """对数梅尔谱 ``log(mel + ref)``。"""
     mel = mel_spectrogram(signal, **kwargs)  # type: ignore[arg-type]
     return np.log(mel + ref)
+
+
+def _dct_ii_basis(n_out: int, n_in: int) -> np.ndarray:
+    """正交归一化 DCT-II 基矩阵，形状 ``(n_out, n_in)``。"""
+    k = np.arange(n_out)[:, None]
+    m = np.arange(n_in)[None, :]
+    basis = np.cos(np.pi * (m + 0.5) * k / n_in)
+    basis[0] *= np.sqrt(1.0 / n_in)
+    basis[1:] *= np.sqrt(2.0 / n_in)
+    return basis
+
+
+def mfcc(signal: np.ndarray, n_mfcc: int = 20, **kwargs: object) -> np.ndarray:
+    """在对数梅尔谱上做 DCT，得到 MFCC，形状 ``(n_mfcc, num_frames)``。"""
+    log_mel = log_mel_spectrogram(signal, **kwargs)
+    n_mels = log_mel.shape[0]
+    if n_mfcc > n_mels:
+        raise ValueError("n_mfcc 不能超过 n_mels")
+    basis = _dct_ii_basis(n_mfcc, n_mels)
+    return basis @ log_mel
