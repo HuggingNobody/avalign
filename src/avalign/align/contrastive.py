@@ -4,6 +4,8 @@ from __future__ import annotations
 
 import numpy as np
 
+from avalign.align.similarity import cosine_similarity_matrix, l2_normalize
+
 
 def softmax(x: np.ndarray, axis: int = -1) -> np.ndarray:
     """沿给定轴的 softmax。"""
@@ -33,3 +35,11 @@ def cross_entropy(
     grad[np.arange(n), targets] -= 1.0
     grad /= n
     return loss, grad
+
+
+def info_nce(query: np.ndarray, key: np.ndarray, temperature: float = 0.07) -> float:
+    """单向 InfoNCE 损失，配对样本位于相似度矩阵的对角线。"""
+    sim = cosine_similarity_matrix(query, key)
+    logits = sim / temperature
+    labels = np.arange(logits.shape[0])
+    return cross_entropy(logits, labels)  # type: ignore[return-value]
