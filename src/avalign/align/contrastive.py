@@ -43,3 +43,13 @@ def info_nce(query: np.ndarray, key: np.ndarray, temperature: float = 0.07) -> f
     logits = sim / temperature
     labels = np.arange(logits.shape[0])
     return cross_entropy(logits, labels)  # type: ignore[return-value]
+
+
+def clip_loss(audio: np.ndarray, video: np.ndarray, temperature: float = 0.07) -> float:
+    """CLIP 风格的对称交叉熵：音频→视频 与 视频→音频 取平均。"""
+    sim = cosine_similarity_matrix(audio, video)
+    logits = sim / temperature
+    labels = np.arange(logits.shape[0])
+    loss_a2v = cross_entropy(logits, labels)
+    loss_v2a = cross_entropy(logits.T, labels)
+    return 0.5 * (loss_a2v + loss_v2a)  # type: ignore[operator]
