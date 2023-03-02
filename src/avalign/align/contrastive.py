@@ -53,3 +53,13 @@ def clip_loss(audio: np.ndarray, video: np.ndarray, temperature: float = 0.07) -
     loss_a2v = cross_entropy(logits, labels)
     loss_v2a = cross_entropy(logits.T, labels)
     return 0.5 * (loss_a2v + loss_v2a)  # type: ignore[operator]
+
+
+def nt_xent(audio: np.ndarray, video: np.ndarray, temperature: float = 0.5) -> float:
+    """NT-Xent (SimCLR) 损失，把音频与视频当作同一 batch 的两个视图。"""
+    n = audio.shape[0]
+    z = np.concatenate([l2_normalize(audio, axis=1), l2_normalize(video, axis=1)], axis=0)
+    sim = z @ z.T / temperature
+    np.fill_diagonal(sim, -np.inf)
+    targets = np.concatenate([np.arange(n) + n, np.arange(n)])
+    return cross_entropy(sim, targets)  # type: ignore[return-value]
