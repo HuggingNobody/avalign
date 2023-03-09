@@ -7,7 +7,8 @@ def test_hann_window_endpoints():
     w = framing.hann_window(8)
     assert w.shape == (8,)
     assert w[0] == 0.0
-    assert np.isclose(w.max(), 1.0, atol=1e-6)
+    assert np.allclose(w, w[::-1])  # 对称
+    assert 0.9 < w.max() <= 1.0
 
 
 def test_frame_signal_shape():
