@@ -18,13 +18,15 @@ def make_synthetic_embeddings(
 ) -> AVPairBatch:
     """从共享隐变量生成配对的音频/视频嵌入。
 
-    每一对共享一个隐向量 ``z``，再分别经过两条随机线性映射，因此对角线
-    上的样本对天然更相似——正好用来检验对齐与检索是否工作。
+    每一对共享一个隐向量 ``z``，两条模态编码器共享一个主投影，再各自叠加
+    一点模态特有的扰动。这样对角线上的样本对天然更相似——正好用来检验
+    对齐与检索是否工作。
     """
     rng = np.random.default_rng(seed)
     z = rng.standard_normal((num_pairs, latent_dim))
-    w_audio = rng.standard_normal((latent_dim, dim))
-    w_video = rng.standard_normal((latent_dim, dim))
+    w_shared = rng.standard_normal((latent_dim, dim))
+    w_audio = w_shared + 0.2 * rng.standard_normal((latent_dim, dim))
+    w_video = w_shared + 0.2 * rng.standard_normal((latent_dim, dim))
     audio = z @ w_audio + noise * rng.standard_normal((num_pairs, dim))
     video = z @ w_video + noise * rng.standard_normal((num_pairs, dim))
     ids = [str(i) for i in range(num_pairs)]

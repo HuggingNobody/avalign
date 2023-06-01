@@ -1,8 +1,8 @@
 import numpy as np
 
+from avalign.align.similarity import cosine_similarity_matrix
 from avalign.data import synthetic
 from avalign.retrieval.metrics import recall_at_k
-from avalign.align.similarity import cosine_similarity_matrix
 from avalign.sync.offset import estimate_offset
 
 
@@ -11,6 +11,7 @@ def test_synthetic_embeddings_shapes():
     assert batch.audio_embed.shape == (20, 16)
     assert batch.video_embed.shape == (20, 16)
     assert batch.size == 20
+    assert np.isfinite(batch.audio_embed).all()
 
 
 def test_synthetic_pairs_are_retrievable():
