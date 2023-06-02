@@ -75,7 +75,7 @@ def _dct_ii_basis(n_out: int, n_in: int) -> np.ndarray:
 
 def mfcc(signal: np.ndarray, n_mfcc: int = 20, **kwargs: object) -> np.ndarray:
     """在对数梅尔谱上做 DCT，得到 MFCC，形状 ``(n_mfcc, num_frames)``。"""
-    log_mel = log_mel_spectrogram(signal, **kwargs)
+    log_mel = log_mel_spectrogram(signal, **kwargs)  # type: ignore[arg-type]
     n_mels = log_mel.shape[0]
     if n_mfcc > n_mels:
         raise ValueError("n_mfcc 不能超过 n_mels")
