@@ -34,4 +34,3 @@ def scale_logits(similarity: np.ndarray, temperature: float) -> np.ndarray:
     if temperature <= 0:
         raise ValueError("temperature 必须为正数")
     return similarity / temperature
-

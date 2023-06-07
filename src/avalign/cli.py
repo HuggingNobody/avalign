@@ -16,9 +16,7 @@ def build_parser() -> argparse.ArgumentParser:
         prog="avalign",
         description="音视频跨模态对齐与检索框架",
     )
-    parser.add_argument(
-        "--version", action="version", version=f"avalign {__version__}"
-    )
+    parser.add_argument("--version", action="version", version=f"avalign {__version__}")
     parser.add_subparsers(dest="command")
     return parser
 
