@@ -13,6 +13,8 @@ import numpy as np
 
 from avalign import __version__
 from avalign.audio.features import log_mel_spectrogram
+from avalign.data.synthetic import make_synthetic_embeddings
+from avalign.retrieval.metrics import retrieval_report
 
 
 def _cmd_features(args: argparse.Namespace) -> int:
@@ -23,6 +25,20 @@ def _cmd_features(args: argparse.Namespace) -> int:
     )
     print(f"对数梅尔谱形状: {log_mel.shape}")
     print(f"均值={log_mel.mean():.4f} 标准差={log_mel.std():.4f}")
+    return 0
+
+
+def _cmd_retrieve(args: argparse.Namespace) -> int:
+    batch = make_synthetic_embeddings(
+        args.num_pairs, dim=args.dim, noise=args.noise, seed=args.seed
+    )
+    from avalign.align.similarity import cosine_similarity_matrix
+
+    sim = cosine_similarity_matrix(batch.audio_embed, batch.video_embed)
+    report = retrieval_report(sim, ks=(1, 5, 10))
+    print(f"合成 {args.num_pairs} 对样本，噪声={args.noise}")
+    for key, value in report.items():
+        print(f"  {key}: {value:.4f}")
     return 0
 
 
@@ -40,6 +56,13 @@ def build_parser() -> argparse.ArgumentParser:
     p_feat.add_argument("--n-mels", type=int, default=64)
     p_feat.add_argument("--seed", type=int, default=0)
     p_feat.set_defaults(func=_cmd_features)
+
+    p_ret = sub.add_parser("retrieve", help="在合成音视频对上评估跨模态检索")
+    p_ret.add_argument("--num-pairs", type=int, default=100)
+    p_ret.add_argument("--dim", type=int, default=64)
+    p_ret.add_argument("--noise", type=float, default=0.1)
+    p_ret.add_argument("--seed", type=int, default=0)
+    p_ret.set_defaults(func=_cmd_retrieve)
 
     return parser
 
