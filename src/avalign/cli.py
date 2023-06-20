@@ -13,8 +13,9 @@ import numpy as np
 
 from avalign import __version__
 from avalign.audio.features import log_mel_spectrogram
-from avalign.data.synthetic import make_synthetic_embeddings
+from avalign.data.synthetic import make_synced_envelopes, make_synthetic_embeddings
 from avalign.retrieval.metrics import retrieval_report
+from avalign.sync.offset import estimate_offset
 
 
 def _cmd_features(args: argparse.Namespace) -> int:
@@ -42,6 +43,15 @@ def _cmd_retrieve(args: argparse.Namespace) -> int:
     return 0
 
 
+def _cmd_sync(args: argparse.Namespace) -> int:
+    audio, video, true_offset = make_synced_envelopes(
+        length=args.length, offset=args.offset, noise=args.noise, seed=args.seed
+    )
+    est = estimate_offset(video, audio, max_lag=args.max_lag)
+    print(f"真实偏移={true_offset}  估计偏移={est}  误差={abs(est - true_offset)}")
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="avalign",
@@ -63,6 +73,14 @@ def build_parser() -> argparse.ArgumentParser:
     p_ret.add_argument("--noise", type=float, default=0.1)
     p_ret.add_argument("--seed", type=int, default=0)
     p_ret.set_defaults(func=_cmd_retrieve)
+
+    p_sync = sub.add_parser("sync", help="估计合成音视频包络之间的时间偏移")
+    p_sync.add_argument("--length", type=int, default=300)
+    p_sync.add_argument("--offset", type=int, default=7)
+    p_sync.add_argument("--noise", type=float, default=0.05)
+    p_sync.add_argument("--max-lag", type=int, default=50)
+    p_sync.add_argument("--seed", type=int, default=0)
+    p_sync.set_defaults(func=_cmd_sync)
 
     return parser
 
