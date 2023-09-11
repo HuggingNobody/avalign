@@ -38,3 +38,20 @@ def test_align_by_offset_overlaps():
 def test_cross_correlation_shapes():
     lags, corr = offset.cross_correlation(np.arange(10.0), np.arange(10.0), max_lag=4)
     assert lags.shape == corr.shape == (9,)
+
+
+def test_negative_offset_recovery():
+    rng = np.random.default_rng(3)
+    base = rng.standard_normal(200)
+    # x 领先 y 6 个采样点 → 需要的滞后为 -6
+    x = np.concatenate([base, np.zeros(6)])
+    y = _delayed(base, 6)
+    assert offset.estimate_offset(x, y, max_lag=20) == -6
+
+
+def test_offset_bounded_by_max_lag():
+    rng = np.random.default_rng(4)
+    x = rng.standard_normal(100)
+    y = rng.standard_normal(100)
+    est = offset.estimate_offset(x, y, max_lag=5)
+    assert -5 <= est <= 5
