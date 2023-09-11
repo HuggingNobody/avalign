@@ -39,3 +39,16 @@ def test_mfcc_rejects_too_many_coeffs():
     sig = np.random.default_rng(2).standard_normal(4000)
     with pytest.raises(ValueError):
         features.mfcc(sig, n_mfcc=50, n_mels=40)
+
+
+@pytest.mark.parametrize("n_mfcc", [13, 20, 40])
+def test_mfcc_shape_parametrized(n_mfcc):
+    sig = np.random.default_rng(3).standard_normal(8000)
+    coeffs = features.mfcc(sig, n_mfcc=n_mfcc, n_mels=40)
+    assert coeffs.shape[0] == n_mfcc
+
+
+@pytest.mark.parametrize("n_mels", [23, 64, 128])
+def test_mel_filterbank_rows_parametrized(n_mels):
+    fb = features.mel_filterbank(n_mels=n_mels, n_fft=512, sample_rate=16000)
+    assert fb.shape == (n_mels, 257)
