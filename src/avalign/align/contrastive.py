@@ -8,14 +8,16 @@ from avalign.align.similarity import cosine_similarity_matrix, l2_normalize
 
 
 def softmax(x: np.ndarray, axis: int = -1) -> np.ndarray:
-    """沿给定轴的 softmax。"""
-    exp = np.exp(x)
+    """沿给定轴的 softmax（减去最大值以保证数值稳定）。"""
+    shifted = x - np.max(x, axis=axis, keepdims=True)
+    exp = np.exp(shifted)
     return exp / np.sum(exp, axis=axis, keepdims=True)
 
 
 def log_softmax(x: np.ndarray, axis: int = -1) -> np.ndarray:
-    """数值上等价于 ``log(softmax(x))``。"""
-    return x - np.log(np.sum(np.exp(x), axis=axis, keepdims=True))
+    """数值稳定的 ``log(softmax(x))``。"""
+    shifted = x - np.max(x, axis=axis, keepdims=True)
+    return shifted - np.log(np.sum(np.exp(shifted), axis=axis, keepdims=True))
 
 
 def cross_entropy(
