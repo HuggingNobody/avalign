@@ -113,7 +113,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     func = getattr(args, "func", None)
     if func is None:
         parser.print_help()
-        return 0
+        return 1  # 没有给出子命令属于误用，返回非零便于脚本检测
     return int(func(args))
 
 
