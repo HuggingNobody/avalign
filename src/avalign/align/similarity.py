@@ -12,7 +12,11 @@ def l2_normalize(x: np.ndarray, axis: int = -1, eps: float = 1e-8) -> np.ndarray
 
 
 def cosine_similarity_matrix(a: np.ndarray, b: np.ndarray) -> np.ndarray:
-    """两组嵌入之间的余弦相似度矩阵，形状 ``(len(a), len(b))``。"""
+    """两组嵌入之间的余弦相似度矩阵。
+
+    输入 ``a`` 形状 ``(m, d)``、``b`` 形状 ``(n, d)``，返回 ``(m, n)`` 矩阵，
+    元素 ``[i, j]`` 是 ``a[i]`` 与 ``b[j]`` 的余弦相似度。
+    """
     a = np.atleast_2d(a)
     b = np.atleast_2d(b)
     if a.shape[1] != b.shape[1]:
