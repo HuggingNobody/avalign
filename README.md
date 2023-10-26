@@ -1,5 +1,9 @@
 # avalign
 
+[![CI](https://github.com/HuggingNobody/avalign/actions/workflows/ci.yml/badge.svg)](https://github.com/HuggingNobody/avalign/actions/workflows/ci.yml)
+[![Python](https://img.shields.io/badge/python-3.10%2B-blue)](https://www.python.org/)
+[![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
+
 **音视频跨模态对齐与检索框架**——用对比学习把音频编码器与视频/图像编码器对齐到同一个
 嵌入空间，并在其上做音视频同步与跨模态检索。
 
@@ -22,6 +26,36 @@
 pip install avalign            # 仅核心（NumPy）
 pip install "avalign[torch]"   # 附带可训练的 PyTorch 编码器
 ```
+
+## 快速开始
+
+```python
+import numpy as np
+from avalign import (
+    make_synthetic_embeddings,
+    clip_loss,
+    cosine_similarity_matrix,
+    retrieval_report,
+)
+
+# 生成一批共享隐空间的合成音视频对
+batch = make_synthetic_embeddings(200, dim=64, noise=0.08, seed=0)
+
+# 对齐信号：对角线上的配对样本损失更低
+loss = clip_loss(batch.audio_embed, batch.video_embed, temperature=0.07)
+
+# 跨模态检索评估
+sim = cosine_similarity_matrix(batch.audio_embed, batch.video_embed)
+print(retrieval_report(sim, ks=(1, 5, 10)))
+```
+
+或者直接跑端到端演示：
+
+```bash
+avalign demo
+```
+
+更多用法见 [docs/usage.md](docs/usage.md)。
 
 ## 定位
 
