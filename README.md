@@ -20,6 +20,18 @@
 - **跨模态检索**：暴力向量索引、双向 Top-K 检索，Recall@K / 中位数排名 / mAP。
 - **可选 PyTorch 后端**：音频 CNN、视觉 CNN、CLIP 风格投影头与双编码器训练循环。
 
+## 能力一览
+
+| 模块 | 提供 | 依赖 |
+| --- | --- | --- |
+| `avalign.audio` | STFT / 梅尔谱 / MFCC / SpecAugment | NumPy |
+| `avalign.video` | 帧采样 / 颜色·运动特征 / 变换 | NumPy |
+| `avalign.align` | InfoNCE / CLIP / NT-Xent / 投影头 | NumPy |
+| `avalign.sync` | 互相关偏移估计与容差指标 | NumPy |
+| `avalign.retrieval` | 向量索引 / Top-K / Recall·mAP | NumPy |
+| `avalign.models` | 音频·视觉 CNN、投影头、双编码器 | PyTorch（可选） |
+| `avalign.train` | 对比损失与训练循环 | PyTorch（可选） |
+
 ## 安装
 
 ```bash
