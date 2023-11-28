@@ -73,3 +73,15 @@ avalign demo
 
 这是一个偏研究向的框架，围绕「音频 ↔ 视觉」的对齐、同步与检索三条线索组织，
 方便从硕士阶段的小实验逐步扩展到更完整的博士方向课题。
+
+## 文档
+
+- [架构](docs/architecture.md)
+- [使用指南](docs/usage.md)
+- [设计笔记与路线图](docs/design-notes.md)
+- [API 参考](docs/api-reference.md)
+- 可运行示例见 [`examples/`](examples)
+
+## 许可
+
+以 [MIT](LICENSE) 许可发布。
