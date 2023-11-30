@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import numpy as np
 
-from avalign.retrieval.index import EmbeddingIndex
+from avalign.retrieval.store import EmbeddingIndex
 
 
 def search_topk(

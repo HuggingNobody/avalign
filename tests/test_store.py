@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from avalign.retrieval.index import EmbeddingIndex
+from avalign.retrieval.store import EmbeddingIndex
 
 
 def test_add_and_len():
