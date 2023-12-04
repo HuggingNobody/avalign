@@ -21,9 +21,7 @@ from avalign.sync.offset import estimate_offset
 def _cmd_features(args: argparse.Namespace) -> int:
     rng = np.random.default_rng(args.seed)
     signal = rng.standard_normal(args.samples)
-    log_mel = log_mel_spectrogram(
-        signal, sample_rate=args.sample_rate, n_mels=args.n_mels
-    )
+    log_mel = log_mel_spectrogram(signal, sample_rate=args.sample_rate, n_mels=args.n_mels)
     print(f"对数梅尔谱形状: {log_mel.shape}")
     print(f"均值={log_mel.mean():.4f} 标准差={log_mel.std():.4f}")
     return 0

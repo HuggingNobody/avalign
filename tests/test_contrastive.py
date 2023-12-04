@@ -55,8 +55,7 @@ def test_clip_loss_equals_manual_symmetric_average(synthetic_pairs):
     logits = cosine_similarity_matrix(audio, video) / 0.07
     labels = np.arange(len(audio))
     manual = 0.5 * (
-        contrastive.cross_entropy(logits, labels)
-        + contrastive.cross_entropy(logits.T, labels)
+        contrastive.cross_entropy(logits, labels) + contrastive.cross_entropy(logits.T, labels)
     )
     assert np.isclose(contrastive.clip_loss(audio, video, temperature=0.07), manual)
 
