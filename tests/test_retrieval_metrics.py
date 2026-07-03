@@ -28,3 +28,31 @@ def test_report_keys():
     report = metrics.retrieval_report(sim, ks=(1, 5))
     assert set(report) == {"R@1", "R@5", "median_rank", "mean_rank", "mAP"}
     assert 0.0 <= report["R@1"] <= 1.0
+
+
+def test_perfect_baseline(synthetic_pairs):
+    from avalign.align.similarity import cosine_similarity_matrix
+
+    audio, video = synthetic_pairs
+    sim = cosine_similarity_matrix(audio, audio)  # 自检索：每个 query 就是自己
+    assert metrics.recall_at_k(sim, k=1) == 1.0
+    assert metrics.mean_rank(sim) == 1.0
+
+
+def test_random_baseline_is_near_chance():
+    # 完全随机的相似度：R@1 应接近 1/N
+    rng = np.random.default_rng(0)
+    n = 200
+    recalls = []
+    for _ in range(5):
+        sim = rng.standard_normal((n, n))
+        recalls.append(metrics.recall_at_k(sim, k=1))
+    assert np.mean(recalls) < 0.05  # 远低于对齐时的水平
+
+
+def test_recall_monotonic_in_k(synthetic_pairs):
+    from avalign.align.similarity import cosine_similarity_matrix
+
+    audio, video = synthetic_pairs
+    sim = cosine_similarity_matrix(audio, video)
+    assert metrics.recall_at_k(sim, 1) <= metrics.recall_at_k(sim, 5) <= metrics.recall_at_k(sim, 10)
