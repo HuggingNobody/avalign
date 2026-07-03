@@ -32,3 +32,26 @@ def cross_correlation(
         m = min(len(a), len(b))
         corr[i] = float(np.sum(a[:m] * b[:m]) / denom) if m > 0 else 0.0
     return lags, corr
+
+
+def estimate_offset(x: np.ndarray, y: np.ndarray, max_lag: int | None = None) -> int:
+    """估计把 ``x`` 对齐到 ``y`` 所需的滞后（正值表示 ``x`` 落后于 ``y``）。"""
+    lags, corr = cross_correlation(x, y, max_lag)
+    # print("corr peak", corr.max())  # debug
+    return int(lags[int(np.argmax(corr))])
+
+
+def align_by_offset(
+    x: np.ndarray,
+    y: np.ndarray,
+    offset: int,
+) -> tuple[np.ndarray, np.ndarray]:
+    """按给定偏移裁剪出两条序列的重叠部分。"""
+    x = np.asarray(x)
+    y = np.asarray(y)
+    if offset >= 0:
+        xa, ya = x[offset:], y[: len(x) - offset]
+    else:
+        xa, ya = x[: len(y) + offset], y[-offset:]
+    m = min(len(xa), len(ya))
+    return xa[:m], ya[:m]
