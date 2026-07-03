@@ -29,3 +29,37 @@ def color_histogram(frame: np.ndarray, bins: int = 8) -> np.ndarray:
     hist = np.concatenate(parts).astype(float)
     total = hist.sum()
     return hist / total if total > 0 else hist
+
+
+def motion_energy(frames: np.ndarray) -> np.ndarray:
+    """相邻帧差的平均幅度，返回长度 ``T - 1`` 的运动能量曲线。
+
+    这条曲线常被用作视觉端的时间包络，配合音频包络做同步偏移估计。
+    """
+    frames = np.asarray(frames, dtype=float)
+    if frames.ndim == 4:
+        frames = to_grayscale(frames)
+    if frames.shape[0] < 2:
+        return np.zeros(0)
+    diffs = np.abs(np.diff(frames, axis=0))
+    return diffs.reshape(diffs.shape[0], -1).mean(axis=1)
+
+
+def grid_pool(frame: np.ndarray, grid: int = 4) -> np.ndarray:
+    """把单帧灰度图平均池化成 ``grid x grid`` 网格并展平。"""
+    frame = np.asarray(frame, dtype=float)
+    if frame.ndim == 3:
+        frame = to_grayscale(frame)
+    h, w = frame.shape
+    hh, ww = (h // grid) * grid, (w // grid) * grid
+    frame = frame[:hh, :ww]
+    pooled = frame.reshape(grid, hh // grid, grid, ww // grid).mean(axis=(1, 3))
+    return pooled.reshape(-1)
+
+
+def frame_embedding(frames: np.ndarray, bins: int = 8) -> np.ndarray:
+    """把每帧转成颜色直方图，堆叠成 ``(T, 3 * bins)`` 的帧级嵌入。"""
+    frames = np.asarray(frames, dtype=float)
+    if frames.ndim == 3:
+        frames = frames[None]
+    return np.stack([color_histogram(f, bins=bins) for f in frames], axis=0)
