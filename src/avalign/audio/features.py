@@ -1,0 +1,39 @@
+"""梅尔谱、对数梅尔谱与 MFCC。"""
+
+from __future__ import annotations
+
+import numpy as np
+
+
+def hz_to_mel(hz: np.ndarray | float) -> np.ndarray:
+    """HTK 风格的 Hz→Mel 转换。"""
+    return 2595.0 * np.log10(1.0 + np.asarray(hz, dtype=float) / 700.0)
+
+
+def mel_to_hz(mel: np.ndarray | float) -> np.ndarray:
+    """Mel→Hz 转换。"""
+    return 700.0 * (10.0 ** (np.asarray(mel, dtype=float) / 2595.0) - 1.0)
+
+
+def mel_filterbank(
+    n_mels: int,
+    n_fft: int,
+    sample_rate: int,
+    fmin: float = 0.0,
+    fmax: float | None = None,
+) -> np.ndarray:
+    """构造三角梅尔滤波器组，形状 ``(n_mels, n_fft // 2 + 1)``。"""
+    if fmax is None:
+        fmax = sample_rate / 2.0
+    n_freqs = n_fft // 2 + 1
+    fft_freqs = np.linspace(0.0, sample_rate / 2.0, n_freqs)
+    mel_pts = np.linspace(hz_to_mel(fmin), hz_to_mel(fmax), n_mels + 2)
+    hz_pts = mel_to_hz(mel_pts)
+
+    fb = np.zeros((n_mels, n_freqs))
+    for m in range(n_mels):
+        lo, center, hi = hz_pts[m], hz_pts[m + 1], hz_pts[m + 2]
+        left = (fft_freqs - lo) / (center - lo + 1e-10)
+        right = (hi - fft_freqs) / (hi - center + 1e-10)
+        fb[m] = np.clip(np.minimum(left, right), 0.0, None)
+    return fb
