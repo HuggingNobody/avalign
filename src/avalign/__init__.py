@@ -19,6 +19,7 @@ from avalign.config import (
     VideoConfig,
 )
 from avalign.data.synthetic import make_synced_envelopes, make_synthetic_embeddings
+from avalign.pipeline import AVAlignPipeline
 from avalign.retrieval.metrics import recall_at_k, retrieval_report
 from avalign.retrieval.search import bidirectional_retrieval, retrieve, search_topk
 from avalign.sync.offset import estimate_offset
@@ -41,6 +42,7 @@ __all__ = [
     "clip_loss",
     "nt_xent",
     "LinearProjection",
+    "AVAlignPipeline",
     "search_topk",
     "retrieve",
     "bidirectional_retrieval",
