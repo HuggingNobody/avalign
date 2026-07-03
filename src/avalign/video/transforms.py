@@ -36,4 +36,5 @@ def normalize(frame: np.ndarray, mean: float = 0.0, std: float = 1.0) -> np.ndar
     frame = np.asarray(frame, dtype=float)
     if frame.max(initial=0.0) > 1.0:
         frame = frame / 255.0
+    frame = np.clip(frame, 0.0, 1.0)
     return (frame - mean) / std
