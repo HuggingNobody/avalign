@@ -11,7 +11,7 @@ def test_version_exits_zero(capsys):
 
 
 def test_no_command_prints_help(capsys):
-    assert cli.main([]) == 0
+    assert cli.main([]) == 1
     assert "usage" in capsys.readouterr().out.lower()
 
 
