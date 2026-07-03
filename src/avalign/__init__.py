@@ -24,7 +24,7 @@ from avalign.retrieval.metrics import recall_at_k, retrieval_report
 from avalign.retrieval.search import bidirectional_retrieval, retrieve, search_topk
 from avalign.sync.offset import estimate_offset
 
-__version__ = "0.1.0.dev0"
+__version__ = "0.1.0"
 
 __all__ = [
     "__version__",
