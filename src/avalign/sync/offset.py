@@ -37,7 +37,6 @@ def cross_correlation(
 def estimate_offset(x: np.ndarray, y: np.ndarray, max_lag: int | None = None) -> int:
     """估计把 ``x`` 对齐到 ``y`` 所需的滞后（正值表示 ``x`` 落后于 ``y``）。"""
     lags, corr = cross_correlation(x, y, max_lag)
-    # print("corr peak", corr.max())  # debug
     return int(lags[int(np.argmax(corr))])
 
 
