@@ -46,3 +46,30 @@ def test_cross_entropy_perfect_prediction_is_small():
     labels = np.arange(5)
     loss = contrastive.cross_entropy(logits, labels)
     assert loss < 1e-3
+
+
+def test_clip_loss_equals_manual_symmetric_average(synthetic_pairs):
+    audio, video = synthetic_pairs
+    from avalign.align.similarity import cosine_similarity_matrix
+
+    logits = cosine_similarity_matrix(audio, video) / 0.07
+    labels = np.arange(len(audio))
+    manual = 0.5 * (
+        contrastive.cross_entropy(logits, labels)
+        + contrastive.cross_entropy(logits.T, labels)
+    )
+    assert np.isclose(contrastive.clip_loss(audio, video, temperature=0.07), manual)
+
+
+def test_single_sample_batch_is_zero_loss():
+    a = np.ones((1, 8))
+    v = np.ones((1, 8))
+    # 只有一个样本时正类就是全部，交叉熵应为 0
+    assert contrastive.info_nce(a, v) < 1e-6
+
+
+def test_lower_temperature_sharpens_loss(synthetic_pairs):
+    audio, video = synthetic_pairs
+    hot = contrastive.clip_loss(audio, video, temperature=0.2)
+    cold = contrastive.clip_loss(audio, video, temperature=0.02)
+    assert cold < hot
