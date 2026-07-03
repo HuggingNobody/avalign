@@ -52,6 +52,23 @@ def _cmd_sync(args: argparse.Namespace) -> int:
     return 0
 
 
+def _cmd_demo(args: argparse.Namespace) -> int:
+    print("=== avalign 端到端演示 ===")
+    batch = make_synthetic_embeddings(args.num_pairs, dim=32, noise=0.08, seed=args.seed)
+    from avalign.align.similarity import cosine_similarity_matrix
+
+    sim = cosine_similarity_matrix(batch.audio_embed, batch.video_embed)
+    report = retrieval_report(sim, ks=(1, 5, 10))
+    print("[检索] 合成音视频对的跨模态检索指标：")
+    for key, value in report.items():
+        print(f"  {key}: {value:.4f}")
+
+    audio, video, true_offset = make_synced_envelopes(length=300, offset=9, seed=args.seed)
+    est = estimate_offset(video, audio, max_lag=50)
+    print(f"[同步] 真实偏移={true_offset}  估计偏移={est}")
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="avalign",
@@ -81,6 +98,11 @@ def build_parser() -> argparse.ArgumentParser:
     p_sync.add_argument("--max-lag", type=int, default=50)
     p_sync.add_argument("--seed", type=int, default=0)
     p_sync.set_defaults(func=_cmd_sync)
+
+    p_demo = sub.add_parser("demo", help="一次性跑通检索与同步的端到端演示")
+    p_demo.add_argument("--num-pairs", type=int, default=100)
+    p_demo.add_argument("--seed", type=int, default=0)
+    p_demo.set_defaults(func=_cmd_demo)
 
     return parser
 
