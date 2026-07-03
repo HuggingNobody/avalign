@@ -49,6 +49,8 @@ def frame_signal(
     signal = np.asarray(signal, dtype=float)
     if signal.ndim != 1:
         raise ValueError("frame_signal 只接受一维信号")
+    if signal.size == 0:
+        raise ValueError("signal 不能为空")
     if frame_length <= 0 or hop_length <= 0:
         raise ValueError("frame_length 与 hop_length 必须为正数")
     if center:
