@@ -28,3 +28,10 @@ def pairwise_cosine(a: np.ndarray, b: np.ndarray) -> np.ndarray:
         raise ValueError("逐行配对要求两组嵌入形状一致")
     return np.sum(l2_normalize(a, axis=1) * l2_normalize(b, axis=1), axis=1)
 
+
+def scale_logits(similarity: np.ndarray, temperature: float) -> np.ndarray:
+    """用温度缩放相似度得到 logits：``sim / temperature``。"""
+    if temperature <= 0:
+        raise ValueError("temperature 必须为正数")
+    return similarity / temperature
+
