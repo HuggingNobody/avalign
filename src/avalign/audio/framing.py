@@ -58,3 +58,31 @@ def frame_signal(
     num_frames = 1 + (len(signal) - frame_length) // hop_length
     idx = np.arange(frame_length)[None, :] + hop_length * np.arange(num_frames)[:, None]
     return signal[idx]
+
+
+def stft(
+    signal: np.ndarray,
+    n_fft: int,
+    hop_length: int,
+    window: str = "hann",
+    *,
+    center: bool = True,
+) -> np.ndarray:
+    """短时傅里叶变换，返回复数谱 ``(n_fft // 2 + 1, num_frames)``。"""
+    frames = frame_signal(signal, n_fft, hop_length, center=center)
+    win = get_window(window, n_fft)
+    spec = np.fft.rfft(frames * win[None, :], n=n_fft, axis=1)
+    return spec.T
+
+
+def power_spectrum(
+    signal: np.ndarray,
+    n_fft: int,
+    hop_length: int,
+    window: str = "hann",
+    *,
+    center: bool = True,
+) -> np.ndarray:
+    """功率谱 ``|STFT|**2``，形状 ``(n_fft // 2 + 1, num_frames)``。"""
+    spec = stft(signal, n_fft, hop_length, window, center=center)
+    return np.abs(spec) ** 2
