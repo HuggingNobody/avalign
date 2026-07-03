@@ -3,8 +3,8 @@ import pytest
 torch = pytest.importorskip("torch")
 
 from avalign.models import AVAlignModel
-from avalign.train.losses import clip_contrastive_loss, info_nce_loss
 from avalign.train.loop import fit
+from avalign.train.losses import clip_contrastive_loss, info_nce_loss
 
 
 def test_clip_contrastive_loss_low_on_perfect_logits():
