@@ -6,7 +6,7 @@ import numpy as np
 
 from avalign.align.contrastive import clip_loss, info_nce, nt_xent
 from avalign.align.projection import LinearProjection
-from avalign.align.similarity import cosine_similarity_matrix, l2_normalize
+from avalign.align.similarity import cosine_similarity_matrix
 from avalign.retrieval.metrics import retrieval_report
 
 _LOSSES = {"clip": clip_loss, "info_nce": info_nce, "nt_xent": nt_xent}
