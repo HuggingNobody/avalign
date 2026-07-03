@@ -55,4 +55,7 @@ def test_recall_monotonic_in_k(synthetic_pairs):
 
     audio, video = synthetic_pairs
     sim = cosine_similarity_matrix(audio, video)
-    assert metrics.recall_at_k(sim, 1) <= metrics.recall_at_k(sim, 5) <= metrics.recall_at_k(sim, 10)
+    r1 = metrics.recall_at_k(sim, 1)
+    r5 = metrics.recall_at_k(sim, 5)
+    r10 = metrics.recall_at_k(sim, 10)
+    assert r1 <= r5 <= r10
